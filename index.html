@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaitali Bhattacharyya</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <!-- Link to External CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Sidebar Section -->
+    <div class="sidebar">
+        <h3>Helpful Papers</h3>
+        <div class="dropdown">
+            <button class="dropdown-btn" onclick="toggleDropdown(this)">LLM</button>
+            <div class="dropdown-content">
+                <a href="https://arxiv.org/abs/2310.06694" target="_blank">1. Sheared Llama </a>
+            </div>
+        </div>
+        <!-- Additional Dropdowns -->
+        <div class="dropdown">
+            <button class="dropdown-btn" onclick="toggleDropdown(this)">VLM</button>
+            <div class="dropdown-content">
+                <a href="https://arxiv.org/abs/2409.10719" target="_blank">1. VLMs’ Reasoning About Persuasive Atypical Images</a>
+        </div>
+    </div>
+        <h3>Reading List</h3>
+        <div class="dropdown">
+            <button class="dropdown-btn" onclick="toggleDropdown(this)">Reading List</button>
+            <div class="dropdown-content">
+            <a href="https://arxiv.org/pdf/2405.12241" target="_blank">1. VLMs’ Reasoning About Persuasive Atypical Images</a>
+
+        </div>
+    </div>
+        <h3>Blogs</h3>
+        <div class="dropdown">
+            <button class="dropdown-btn" onclick="toggleDropdown(this)">Blogs</button>
+            <div class="dropdown-content">
+                <a href="#" onclick="showBlog('blogs/blog1.html'); return false;">🍥 E2E SAE</a>
+                <!-- <a href="#" onclick="showBlog('blog2.html'); return false;">🍥 Transformer</a>
+                <a href="#" onclick="showBlog('blog3.html'); return false;">🍥 Sparse Autoencoder</a> -->
+            </div>
+        </div>
+    </div>
+    <!-- Content Section -->
+    <div class="content" id="contentSection">
+        <div id="welcomeMessage"></div>
+    
+        <img src="./moon.jpeg" alt="Welcome Image" id="welcomeImage" style="display: block; margin: 10px auto; width: 1110px;">
+        <div id="blogContent"></div>
+    </div>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeButton">🌞</button>
+    <!-- Link to External JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+<!-- ![Profile Views](https://komarev.com/ghpvc/?username=cv-chaitali&color=blueviolet) -->

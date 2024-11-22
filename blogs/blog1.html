@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformer From Scratch : Step by Step</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'VT323', monospace;
+        }
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #068b80;
+            font-family: 'VT323', monospace;
+        }
+        
+        h2 {
+            font-size: 2rem;
+            margin-top: 25px;
+            color: #6390d4;
+            font-family: 'VT323', monospace;
+        }
+
+        h5 {
+                font-size: 1rem;
+                margin-top: 20px;
+                color: #f58bb4; /* Cute pink tone */
+                font-family: 'Comic Sans MS', 'Chalkboard SE', cursive; /* Fun and playful font */
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Soft shadow for a 3D effect */
+                animation: bounce 2s infinite ease-in-out; /* Add a bouncy animation */
+            }
+        p {
+            font-size: 1.2rem;
+        }
+
+        .quote {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f7fcff;
+            border-left: 5px solid #f47373;
+            font-style: italic;
+            color: #2e3a59;
+            font-family: 'VT323', monospace;
+        }
+        .cta {
+            margin-top: 10px;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            color: #d35a8d;
+            font-weight: 600;
+            font-family: 'VT323', monospace;
+            border: 2px dashed #7a9df1;
+        }   
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>E2E SAE</h1>
+
+        <p>Previous works on Sparse Autoencoder has shown its amazing interpretability of any LLM/NN however, current SAEs focus on minimizing the 
+        Mean Squared Reconstruction Error (MSRE) which is okay for the cases when the relationship between the network and activation functions are very straightforward.
+        To be specific, if a NN's activations are derived from a small and finite t of GT features, the SAE will learn better because the feeatures are 
+        directly affecting the network's performance. 
+        But for large NN's it is a bit different as the feature are not directly tied to the performance rather it is more complex and redundant. In this case MSRE
+        will be optimised based on these irrelevant features as SAE generally does not really know about functional importance.</p>
+
+        <p>So, here the main question is how one can select functionally important feature i.e. how one can select the features which are responsible for 
+        the network's behavior.</p>
+        <p>To answer this question, they have come up with training methods which consider these properties. To be clear, they do use the sparsity penalty 
+            of the activation but instead of optimising that they use KL divergence b/w the original O/P logits and the O/P logits when passing SAE output. 
+        </p>
+        <p> This was just an overview, we will discuss how they do it in more details in the following sections</p>
+
+        <h2><img src="nsm_gasp.png" width="35px" height="35px" alt="nsm_gasp"> Contribution/Findings</h2>
+        Before Starting, let's see the main points or finidings/contributions they presented in the paper: 
+
+        <p> ☁ Introduces a novel method to train SAEs by minimizing KL divergence between: Original model’s output distribution & Model with SAE-activated features</p>
+        <p> ☁ Ensures learned features are directly tied to the network’s functional behavior</p>
+        <p> ☁ E2E SAEs explain more network performance while requiring fewer total features and active features per datapoint</p>
+        <p> ☁ Bridges performance explanation and interpretability for neural networks</p>
+
+        <h2><img src="nsm_gasp.png" width="35px" height="35px" alt="nsm_gasp"> Formulations</h2>
+        <h5>
+            ☁ Transformer Part: Considering the decoder-only transformers (GPT2 small, TinyStories 1M, etc.), the equations are as follows:
+        </h5>
+        <p style="text-align: center; font-size: 1.5em; color: #e156cf;">
+            <span>
+                <i>a<sup>(0)</sup>(x)</i> = x
+            </span>
+            <br>
+            <span>
+                <i>a<sup>(l)</sup>(x)</i> = <i>f<sup>(l)</sup></i>(<i>a<sup>(l−1)</sup>(x)</i>), for <i>l = 1, ..., L−1</i>
+            </span>
+            <br>
+            <span>
+                y = softmax(<i>f<sup>(L)</sup></i>(<i>a<sup>(L−1)</sup>(x)</i>)).
+            </span>
+        </p>
+        <!-- Explanation Section -->
+        <div style="text-align: center; margin-top: 20px; font-size: 1.3em; color: #2980b9;">
+            <p><b>Parameters explained:</b></p>
+            <p style="display: flex; justify-content: center; align-items: center;">
+                <span style="margin-right: 10px;"><i>x:</i> <b>Input data</b> </span> ➡️
+                <span style="margin: 0 10px;"><i>a<sup>(0)</sup>(x):</i> <b>Initial activation</b></span> ➡️
+                <span style="margin: 0 10px;"><i>a<sup>(l)</sup>(x):</i> <b>Activations at layer <i>l</i></b></span> ➡️
+                <span style="margin: 0 10px;"><i>f<sup>(l)</sup>:</i> <b>Transformation function</b></span> ➡️
+                <span style="margin-left: 10px;"><i>y:</i> <b>Model's output</b></span>
+            </p>
+        </div>
+        <p> In short: Extracting activation from each layer</p>
+        
+        <h5> ☁ Encoder Part: After getting activations from transformer</h5>
+
+        <p style="text-align: center; font-size: 1.5em; color: #e156cf;">
+            <span>
+                <b>Enc</b>(<i>a<sup>(l)</sup>(x)</i>) = ReLU(<i>W<sub>e</sub>a<sup>(l)</sup>(x)</i> + <i>b<sub>e</sub></i>)
+            </span>
+            <br>
+            <span>
+                <b>SAE</b>(<i>a<sup>(l)</sup>(x)</i>) = <i>D<sup>⊤</sup></i> Enc(<i>a<sup>(l)</sup>(x)</i>) + <i>b<sub>d</sub></i>,
+            </span>
+        </p>
+        
+        <!-- Explanation Section -->
+        <div style="text-align: center; margin-top: 20px; font-size: 1.3em; color: #2980b9;">
+            <p><b>Parameters explained:</b></p>
+            <p style="display: flex; justify-content: center; align-items: center;">
+                <span style="margin-right: 10px;"><b>Enc:</b> Encoder function</span> ➡️
+                <span style="margin: 0 10px;"><b>ReLU:</b> Rectified Linear Unit activation</span> ➡️
+                <span style="margin: 0 10px;"><b>W<sub>e</sub>, b<sub>e</sub>:</b> Encoder weights and biases</span> ➡️
+                <span style="margin: 0 10px;"><b>D<sup>⊤</sup>:</b> Decoder weights (transposed)</span> ➡️
+                <span style="margin-left: 10px;"><b>b<sub>d</sub>:</b> Decoder bias</span>
+            </p>
+        </div>
+        <p> In short: Using the activation as input of Encoder and with the help of decoder, reconstructing the activations</p>
+        </p>
+        <h2><img src="nsm_gasp.png" width="35px" height="35px" alt="nsm_gasp"> Training</h2>
+        <h5>☁ Method:1 Baseline with L<sub>local</sub></h5>
+        <p>
+            In this settings baseline model SAE<sub>Local</sub> was trained with <i>L<sub>local</sub></i>. 
+            <p style="text-align: center; font-size: 1.5em; color: #e156cf;">
+                <span>
+                    <i>L<sub>local</sub></i> = <i>L<sub>reconstruction</sub></i> + <i>L<sub>sparsity</sub></i>
+                </span>
+                <br>
+                <span>
+                    = ||<i>a<sup>(l)</sup>(x)</i> − <b>SAE<sub>local</sub></b>(<i>a<sup>(l)</sup>(x)</i>)||<sup>2</sup><sub>2</sub>
+                </span>
+                <br>
+                <span>
+                    + ϕ ||<b>Enc</b>(<i>a<sup>(l)</sup>(x)</i>)||<sub>1</sub>
+                </span>
+            </p>
+            
+            <!-- Explanation Section -->
+            <div style="text-align: center; margin-top: 20px; font-size: 1.3em; color: #2980b9;">
+                <p><b>Parameters explained:</b></p>
+                For usual SAE, we calculate the reconsutructed activation's loss. This means the activation we get from LLM/NN is considered as the GT and 
+                the reconstructed activation through the SAE is considered as the prediciton and we get the L2 loss between these two.
+            </div>
+        </p>
+
+            <!-- Method 1 -->
+            <h5>☁ Method:2: SAE<sub>e2e</sub> with L<sub>e2e</sub></h5>
+            <p>
+                <p style="text-align: center; font-size: 1.5em; color: #e156cf;">
+
+                <span>
+                    <i>â<sup>(l)</sup>(x)</i> = <b>SAE<sub>e2e</sub></b>(<i>a<sup>(l)</sup>(x)</i>)
+                </span>
+                <br>
+                <span>
+                    <i>â<sup>(k)</sup>(x)</i> = <i>f<sup>(k)</sup></i>(<i>â<sup>(l)</sup>(x)</i>), for <i>k = l, ..., L−1</i>
+                </span>
+                <br>
+                <span>
+                    <i>ŷ</i> = softmax(<i>f<sup>(L)</sup></i>(<i>â<sup>(L−1)</sup>(x)</i>))
+                </span>
+            </p>
+        
+            <div style="text-align: center; margin-top: 20px; font-size: 1.3em; color: #2980b9;">
+                <p><b>Parameters explained:</b></p>
+                New loss which is added to this is the logits loss. So, this is how it is done :  We get the first activation from the first layer of LLM/NN and 
+                then we feed it to the SAE and we get a reconstructed version of the activation. Now this reconstructed activation will go to the second layer 
+                of the LLM/NN and then we will get the 2nd layer's activation and it will be fed into the 3rd layer of the model. And so on. At the last layer 
+                we will get the logits after applying softmax. Now here, we get the KINDA reconstructed/predicted logits and the GT logits [coming from the NN]. Here we
+                get the KL divergence loss between these two logits. 
+            </div>
+
+        
+            <!-- Method 3 -->
+            <h5>☁ Method:3 SAE<sub>e2e</sub> with L<sub>e2e+downstream</sub></h5>
+            <p>
+                <p style="text-align: center; font-size: 1.5em; color: #e156cf;">
+
+                <span>
+                    <i>L<sub>e2e+downstream</sub></i> = <i>L<sub>KL</sub></i> + <i>L<sub>sparsity</sub></i> + <i>L<sub>downstream</sub></i>
+                </span>
+                <br>
+                <span>
+                    = KL(<i>ŷ, y</i>) + ϕ ||<b>Enc</b>(<i>a<sup>(l)</sup>(x)</i>)||<sub>1</sub>
+                </span>
+                <br>
+                <span>
+                    + β<sub>l</sub> / (L − l) 
+                    <span style="display: inline-block;">
+                        ∑<sub>k=l+1</sub><sup>L−1</sup> ||<i>â<sup>(k)</sup>(x)</i> − <i>a<sup>(k)</sup>(x)</i>||<sup>2</sup><sub>2</sub>
+                    </span>
+                </span>
+            </p>
+
+            <div style="text-align: center; margin-top: 20px; font-size: 1.3em; color: #2980b9;">
+                <p><b>Parameters explained:</b></p>
+                Here we do the same thing as the method 1 but we add another part to the loss function. When we are getting the activation from each layer after 
+                we applying SAE at the first layer [one time], we will get a L2 loss of the loss we get from each layer of NN and the GT activation [which we get 
+                from each layer of the original NN/LLM].
+        </p>
+
+    </p>
+    <h2><img src="nsm_gasp.png" width="35px" height="35px" alt="nsm_gasp"> Findings</h2>
+    <h5> ☁ Finding - 1 </h5>
+    The below image contains three figures. Figure-1's bottom part pareto curve describing the trade off between L0 and CE loss. The figure shows how the e2e and e2e+ds methods need 
+    lower number of features for a data point to describe similar network performance. Because with lower L0 and alive dictionary elements the increase of CE loss (smaller CE) is more. Table 1 shows the same 
+    conclusion. The increase of CE needs much less alive dictionaries comapred to the local SAE. 
+    <h5> ☁ Finding - 2 </h5>
+    In the figure 2 we can see that in later layers e2e+ds kind of works very similar to the local SAE but with mroe efficiency and very clearly e2e performs better 
+    with greater CE loss. Well, it can be a bit confusing as they say 'poor reconstruciton', but it actually depicts its interpretability of the model's performance
+    which was the objective of the paper. 
+    <h5> ☁ Finding - 3 </h5>
+    Figure 3 depicts the cosine similarity between 3 settings in 3 different environments. If we see 3-a, we can see that for local SAE, the features are more clustered
+    which means the model is not learning any special features. For e2e+ds, we can see that it is bimodal, which means that it has some similar feature as 
+    local SAE and some as the e2e. This actually says a lot about its diverse interpretability. It is aware of the model's funcitonality and also
+    the dataset's feature introducing both the variabulity in the model. 
+ 
+
+    <br>
+
+    <img src="blog1_figs/Picture1.png" width="800px" height="600px" alt="Figure 1">
+
+        <div class="cta">
+            Reference: <a href="https://arxiv.org/abs/2405.12241" target="_blank">
+                Braun, Dan, et al. "Identifying Functionally Important Features with End-to-End Sparse Dictionary Learning." arXiv preprint arXiv:2405.12241 (2024).</a>
+        </div>
+        
+
+
+    </body>
+</html>
+

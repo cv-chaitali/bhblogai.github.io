@@ -1,0 +1,193 @@
+/* Root Variables for Light and Dark Theme */
+:root {
+    --bg-color: #f5f5f5;
+    --text-color: #222;
+    --sidebar-bg: #e0e4e9;
+    --sidebar-text-color: #333;
+    --link-color: #1f78d1;
+    --button-bg: #dddddd;
+    --button-hover: #cccccc;
+}
+.dark-theme {
+    --bg-color: #1c1c1e;
+    --text-color: #e4e4e4;
+    --sidebar-bg: #2c2c2e;
+    --sidebar-text-color: #f5f5f5;
+    --link-color: #82aaff;
+    --button-bg: #333333;
+    --button-hover: #444444;
+}
+
+/* General Styles */
+body {
+    font-family: 'Roboto Mono', monospace;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 250px;
+    padding: 20px;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text-color);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.sidebar h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+.dropdown-btn {
+    background-color: var(--button-bg);
+    color: var(--sidebar-text-color);
+    border: none;
+    padding: 12px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-size: 15px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+.dropdown-btn:hover {
+    background-color: var(--button-hover);
+}
+.dropdown-content {
+    display: none;
+    padding-left: 15px;
+}
+.dropdown-content a {
+    display: block;
+    padding: 6px 0;
+    font-family: 'Roboto Mono', monospace;
+    transition: color 0.2s ease;
+}
+
+/* Content Area */
+.content {
+    margin-left: 270px;
+    padding: 40px;
+    max-width: 1100;
+    font-size: 16px;
+    line-height: 1.6;
+}
+.content h1 {
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+.content p {
+    margin-bottom: 20px;
+}
+
+/* Toggle Theme Button */
+.theme-toggle {
+    cursor: pointer;
+    padding: 10px 15px;
+    border: none;
+    background: var(--button-bg);
+    color: var(--text-color);
+    font-size: 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    position: fixed;
+    top: 10px;
+    right: 20px;
+}
+.theme-toggle:hover {
+    background-color: var(--button-hover);
+}
+
+/* blog contents */
+
+.light-pink-bold {
+    color: rgb(239, 118, 136);
+    font-weight: bold;
+}
+
+.dark-pink-bold {
+    color: rgb(246, 88, 112);
+    font-weight: bold;
+}
+
+.light-blue-bold {
+    color: rgb(30, 175, 232);
+    font-weight: bold;
+}
+
+.light-black-bold {
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+}
+
+.index h3 {
+    font-size: 1.4em;
+    color: #ff6f91; /* Soft pink color */
+    font-family: 'Comic Sans MS', 'Arial', sans-serif; /* Playful font */
+    margin-bottom: 10px;
+}
+
+.index ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.index li {
+    margin: 8px 0;
+}
+
+.index a {
+    color: #ff8fab; /* Soft coral-pink color */
+    font-weight: bold;
+    font-family: 'Comic Sans MS', 'Arial', sans-serif;
+    text-decoration: none;
+    transition: color 0.3s, transform 0.2s; /* Smooth hover effects */
+}
+
+.index a:hover {
+    color: #ff6f91; /* Darker pink on hover */
+    text-decoration: underline;
+    transform: scale(1.05); /* Slight zoom effect on hover */
+}
+
+
+.code-block {
+    background-color: #edc6c6;  /* Light gray background for contrast */
+    border: 1px solid #f5dada;     /* Border for a framed look */
+    padding: 2px;              /* Padding for spacing */
+    border-radius: 2px;         /* Slightly rounded corners */
+    overflow-x: auto;           /* Horizontal scroll for long lines */
+    font-family: monospace;     /* Monospace font for code appearance */
+    font-family: monospace;     /* Monospace font for code appearance */
+    font-size: 9px;            /* Font size adjustment */
+}
+
+.equation {
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+    margin-top: 20px;
+}
+.equation span {
+    font-weight: bold;
+    color: #0056b3;
+}
